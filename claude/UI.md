@@ -672,39 +672,53 @@ AutoWeb/
 │   └── AuthenticationSettings.razor   # AuthenticationSettings component
 ├── Tests/
 │   ├── TestPage.razor                 # Component-agnostic test harness
-│   ├── MockServices.cs                # MockAutoHostClient, MockStates registry
+│   ├── MockServices.cs                # MockAutoHostClient, MockPasskeyServiceForAuth, MockStates registry
 │   ├── MockJSRuntime.cs               # Mock JSRuntime (sessionStorage, PasskeySupport)
 │   └── PlaywrightCollection.cs        # xUnit collection definition
 
 AutoWeb.Tests/
 ├── Components/
-│   ├── AuthenticationSettings/
-│   │   ├── AuthenticationSettingsTests.cs           # Unit tests (bUnit)
-│   │   ├── AuthenticationSettingsRenderTests.cs     # Render tests (bUnit)
-│   │   ├── AuthenticationSettingsLayoutTests.cs     # Layout tests (Playwright)
-│   │   └── AuthenticationSettingsInteractionTests.cs # Interaction tests (Playwright)
+│   └── AuthenticationSettings/
+│       ├── UnitTests.cs               # Unit tests (bUnit) - 58 tests
+│       ├── RenderTests.cs             # Render tests (bUnit) - 5 tests
+│       ├── LayoutTests.cs             # Layout tests (Playwright) - 5 tests
+│       ├── InteractionTests.cs        # Interaction tests (Playwright) - 11 tests
+│       └── SPEC.md                    # Component specification and test documentation
+├── Pages/
 │   └── Auth/
-│       └── (Future: Auth tests following same pattern)
+│       ├── UnitTests.cs               # Unit tests (bUnit) - 34 tests
+│       ├── RenderTests.cs             # Render tests (bUnit) - 10 tests
+│       ├── LayoutTests.cs             # Layout tests (Playwright) - 8 tests
+│       ├── InteractionTests.cs        # Interaction tests (Playwright) - 8 tests
+│       └── SPEC.md                    # Component specification and test documentation
 ├── PlaywrightFixture.cs               # Shared Playwright setup (browser lifecycle)
 └── AutoWeb.Tests.csproj               # Includes Playwright, bUnit, xUnit
 
 claude/
-├── UI.md                              # This document
-├── ui/
-│   ├── COMPONENT_TESTING.md           # Component testing methodology
-│   ├── METHOD.md                      # UI testing approach
-│   ├── AuthenticationSettings/
-│   │   ├── AuthenticationSettings.md      # Component specification
-│   │   └── *.png                          # Screenshots for documentation
-│   ├── Auth.razor/
-│   │   ├── Auth.razor.md                  # Auth page specification
-│   │   ├── Auth.razor.test.md             # Auth test expectations
-│   │   └── Auth.razor.json                # Legacy screenshot definitions
-│   └── capture-screenshots.py         # Legacy screenshot capture (optional)
+├── UI.md                              # This document (modern testing methodology)
+├── Reminder.md                        # Critical debugging reminders
+├── Stupid.md                          # Anti-patterns and mistakes to avoid
 └── tasks/
-    ├── Auth-Testing-Modernization.md  # Auth testing modernization plan
-    └── Auth-Testing-WTB.md            # Auth testing work task breakdown
+    ├── Auth-Testing-Modernization.md  # Auth testing modernization plan (COMPLETED)
+    └── Auth-Testing-WTB.md            # Auth testing work task breakdown (COMPLETED)
 ```
+
+**Total Test Coverage (139 tests, ~1m 17s runtime):**
+- AuthenticationSettings: 79 tests
+- Auth: 60 tests
+
+**Component Documentation:**
+Each component has a SPEC.md file co-located with its tests containing:
+- Component purpose and functional requirements
+- All valid states and transitions
+- Mock infrastructure details
+- Complete test coverage breakdown by layer
+- Known issues and debugging tips
+- Performance metrics
+
+Examples:
+- `AutoWeb.Tests/Components/AuthenticationSettings/SPEC.md`
+- `AutoWeb.Tests/Pages/Auth/SPEC.md`
 
 ## Component Testing Checklist
 
@@ -757,11 +771,12 @@ When testing a new component, follow this checklist:
 - Target: 3-5 tests, ~15 seconds total runtime
 
 ### 8. Document Component
-- [ ] Create `claude/ui/{ComponentName}/{ComponentName}.md`
-- [ ] Document functional requirements
-- [ ] Document test infrastructure
-- [ ] Document known issues
-- [ ] Include screenshots
+- [ ] Create `AutoWeb.Tests/{ComponentPath}/SPEC.md`
+- [ ] Document all valid states and transitions
+- [ ] Document mock infrastructure
+- [ ] Document test coverage by layer
+- [ ] Document known issues and debugging tips
+- [ ] Include references to test files
 
 ## Performance Targets
 
@@ -810,74 +825,30 @@ For a component with comprehensive coverage:
 - **Easy updates**: Change mock data, re-run tests
 - **No flakiness**: Deterministic, no backend dependencies
 
-## System Architecture & Lifecycle
+## System Architecture
 
-### How capture-screenshots.py Works
-The capture system has a specific lifecycle that MUST be understood:
+### Test Execution Lifecycle
 
-1. **Startup Phase**
-   - Kills any existing processes on ports 6050 (AutoHost) and 6100 (AutoWeb)
-   - Removes existing test database for fresh start
-   - Builds latest CSS with TailwindCSS
-   - Starts AutoHost on port 6050 with isolated test database
-   - Starts AutoWeb on port 6100
-   - Waits for both servers to be ready
+**bUnit Tests (Unit + Render):**
+1. Test creates test context (`TestContext`)
+2. Registers mock services (MockAutoHostClient, MockPasskeyService, MockJSRuntime)
+3. Renders component with `RenderComponent<T>()`
+4. Asserts against component's rendered markup or behavior
+5. Total time: 10-50ms per test
 
-2. **Capture Phase**
-   - For each screenshot definition in the JSON files:
-     - Generates a Playwright script in `/tmp/{name}.js`
-     - Executes the script with `node`
-     - Captures screenshot and LayoutML data
-     - Saves to `results/` directory
+**Playwright Tests (Layout + Interaction):**
+1. Test class uses `[Collection("Playwright")]` to share browser instance
+2. PlaywrightFixture starts AutoWeb with `ENABLE_MOCKS=true` once per test class
+3. Individual test navigates to `/test?component=X&state=Y&automated=true`
+4. Test interacts with page and asserts conditions
+5. Browser shared across all tests in class for performance
+6. Total time: 1-5 seconds per test
 
-3. **Cleanup Phase**
-   - Kills both servers
-   - Servers are NO LONGER RUNNING after this point
-
-### CRITICAL: Understanding Script Dependencies
-
-**The `/tmp/*.js` scripts are NOT standalone!**
-- They REQUIRE AutoHost running on port 6050
-- They REQUIRE AutoWeb running on port 6100
-- They are raw Playwright automation scripts, NOT test files
-- They have no test() blocks, no assertions, no test runner
-- They ONLY work during the capture-screenshots.py execution
-
-**NEVER attempt to:**
-- Run these scripts with `node` after capture-screenshots.py completes
-- Run these scripts with `npx playwright test` (they're not test files!)
-- Debug these scripts in isolation without the servers running
-
-**To debug capture issues:**
-- Add console.log statements to the generated scripts
-- Run the full capture-screenshots.py and observe output
-- Use the `--page` flag to run just one page's captures
-- Check the actual error messages during capture execution
-
-The scripts are meaningless without the full system context - like trying to test a car's transmission by removing it from the car.
-
-## Evolution from Screenshot Testing
-
-This system evolved from the original `capture-screenshots.py` approach:
-
-**Old approach (capture-screenshots.py):**
-- Start full backend server
-- Start frontend server
-- Navigate through UI to reach state
-- Capture screenshot
-- Repeat for each state
-- Total time: 30-60 seconds per component
-
-**New approach (mock-based testing):**
-- Use mocks, no backend needed
-- Direct URL to any state
-- Browser starts once per test class
-- Tests run in parallel
-- Total time: ~20 seconds for complete component
-
-**When to use each:**
-- **Mock-based tests**: Default for all component testing
-- **capture-screenshots.py**: Documentation generation, visual regression testing
+**Key Performance Optimization:**
+- Browser startup happens once per test class, not per test
+- Mock services eliminate backend dependency
+- Direct URL access to any state eliminates navigation steps
+- Tests run independently and can be parallelized
 
 ## One-Shot Test Implementation
 
