@@ -32,7 +32,8 @@ public static class MockStates
             "existing-password-only",
             "existing-passkey-only",
             "existing-passkey-only-not-supported",
-            "existing-password-and-passkey"
+            "existing-password-and-passkey",
+            "existing-password-and-passkey-not-supported"
         }
     };
 
@@ -149,6 +150,7 @@ public class MockAutoHostClient : IAutoHostClient
 
             // Auth.razor states - existing users with both
             case "existing-password-and-passkey":
+            case "existing-password-and-passkey-not-supported":
                 _hasPassword = true;
                 _passkeys = new List<PasskeyInfo> {
                     new() { Id = 1, DeviceName = "iPhone 15 Pro", CreatedAt = DateTimeOffset.UtcNow.AddDays(-30), LastUsedAt = DateTimeOffset.UtcNow.AddHours(-2) }
@@ -462,7 +464,8 @@ public class MockPasskeyServiceForAuth : PasskeyService
 
         // States where passkeys are NOT supported
         var isSupported = state != "new-user-passkey-not-supported"
-                       && state != "existing-passkey-only-not-supported";
+                       && state != "existing-passkey-only-not-supported"
+                       && state != "existing-password-and-passkey-not-supported";
 
         Console.WriteLine($"[MockPasskeyServiceForAuth] IsSupported() => {isSupported} (state={state})");
         return Task.FromResult(isSupported);

@@ -330,4 +330,51 @@ public class AuthInteractionTests
             await page.CloseAsync();
         }
     }
+
+    [Fact]
+    public async Task ExistingUser_PasswordAndPasskey_NoPasskeySupport_PasswordOnly()
+    {
+        var page = await _fixture.Browser.NewPageAsync();
+
+        try
+        {
+            // Navigate to test page with existing-password-and-passkey-not-supported state
+            await page.GotoAsync($"{PlaywrightFixture.BaseUrl}/test?component=Auth&state=existing-password-and-passkey-not-supported&automated=true",
+                new() { WaitUntil = WaitUntilState.NetworkIdle });
+            await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await page.WaitForTimeoutAsync(1500);
+
+            // Fill email and continue
+            await page.FillAsync("input[type='email']", "test@example.com");
+            await page.ClickAsync("button[type='submit']:has-text('Continue')");
+            await page.WaitForTimeoutAsync(500);
+
+            // Verify password login form appears directly (no method selection, no passkey option)
+            await Assertions.Expect(page.Locator("input[type='password']")).ToBeVisibleAsync();
+            await Assertions.Expect(page.Locator("button[type='submit']:has-text('Sign In')")).ToBeVisibleAsync();
+
+            // Verify passkey button does NOT appear
+            var passkeyButton = page.Locator("button:has-text('🔐')");
+            await Assertions.Expect(passkeyButton).Not.ToBeVisibleAsync();
+
+            // Fill password and sign in
+            await page.FillAsync("input[type='password']", "password123");
+            await page.ClickAsync("button[type='submit']:has-text('Sign In')");
+            await page.WaitForTimeoutAsync(1000);
+
+            // Verify sessionStorage has authToken
+            var token = await page.EvaluateAsync<string>("sessionStorage.getItem('authToken')");
+            var userId = await page.EvaluateAsync<string>("sessionStorage.getItem('userId')");
+            var userEmail = await page.EvaluateAsync<string>("sessionStorage.getItem('userEmail')");
+
+            Assert.NotNull(token);
+            Assert.NotEmpty(token);
+            Assert.NotNull(userId);
+            Assert.Equal("test@example.com", userEmail);
+        }
+        finally
+        {
+            await page.CloseAsync();
+        }
+    }
 }
