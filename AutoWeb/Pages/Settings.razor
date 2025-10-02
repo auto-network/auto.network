@@ -20,9 +20,9 @@
                     class="@GetTabClass(SettingsSection.Authentication)">
                 Authentication
             </button>
-            <button @onclick="() => SelectSection(SettingsSection.ApiKeys)"
-                    class="@GetTabClass(SettingsSection.ApiKeys)">
-                API Keys
+            <button @onclick="() => SelectSection(SettingsSection.Connections)"
+                    class="@GetTabClass(SettingsSection.Connections)">
+                Connections
             </button>
         </div>
 
@@ -33,8 +33,8 @@
                 case SettingsSection.Authentication:
                     <AuthenticationSettings />
                     break;
-                case SettingsSection.ApiKeys:
-                    <ApiKeysSettings />
+                case SettingsSection.Connections:
+                    <ConnectionHub />
                     break;
             }
         </div>

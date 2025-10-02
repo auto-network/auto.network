@@ -34,6 +34,12 @@ public static class MockStates
             "existing-passkey-only-not-supported",
             "existing-password-and-passkey",
             "existing-password-and-passkey-not-supported"
+        },
+        ["ConnectionHub"] = new[]
+        {
+            "empty",
+            "single-connection",
+            "multiple-connections"
         }
     };
 
@@ -51,6 +57,7 @@ public class MockAutoHostClient : IAutoHostClient
     private bool _hasPassword;
     private List<PasskeyInfo> _passkeys;
     private Dictionary<string, RegisteredUser> _registeredUsers = new();
+    private List<ConnectionInfo> _connections = new();
 
     /// <summary>
     /// Override login result for testing failure scenarios.
@@ -164,9 +171,29 @@ public class MockAutoHostClient : IAutoHostClient
                 };
                 break;
 
+            // ConnectionHub states
+            case "empty":
+                _connections = new List<ConnectionInfo>();
+                break;
+            case "single-connection":
+                _connections = new List<ConnectionInfo>
+                {
+                    new() { Id = 1, ServiceType = ServiceType.OpenRouter, Protocol = ProtocolType.OpenAICompatible, Key = "sk-or-test-key", Description = "OpenRouter Connection", CreatedAt = DateTimeOffset.UtcNow.AddDays(-5), LastUsedAt = DateTimeOffset.UtcNow.AddHours(-2) }
+                };
+                break;
+            case "multiple-connections":
+                _connections = new List<ConnectionInfo>
+                {
+                    new() { Id = 1, ServiceType = ServiceType.OpenRouter, Protocol = ProtocolType.OpenAICompatible, Key = "sk-or-test-key", Description = "OpenRouter", CreatedAt = DateTimeOffset.UtcNow.AddDays(-10), LastUsedAt = DateTimeOffset.UtcNow.AddHours(-2) },
+                    new() { Id = 2, ServiceType = ServiceType.OpenAI, Protocol = ProtocolType.OpenAICompatible, Key = "sk-openai-test-key", Description = "OpenAI", CreatedAt = DateTimeOffset.UtcNow.AddDays(-7), LastUsedAt = DateTimeOffset.UtcNow.AddDays(-1) },
+                    new() { Id = 3, ServiceType = ServiceType.Anthropic, Protocol = ProtocolType.AnthropicAPI, Key = "sk-ant-test-key", Description = "Anthropic Claude", CreatedAt = DateTimeOffset.UtcNow.AddDays(-3), LastUsedAt = DateTimeOffset.UtcNow.AddHours(-5) }
+                };
+                break;
+
             default:
                 _hasPassword = true;
                 _passkeys = new List<PasskeyInfo>();
+                _connections = new List<ConnectionInfo>();
                 break;
         }
     }
@@ -320,10 +347,71 @@ public class MockAutoHostClient : IAutoHostClient
 
     // Other methods throw NotImplementedException
     public void Dispose() { }
-    public Task<ApiKeyResponse> AuthGetApiKeyAsync() => throw new NotImplementedException();
-    public Task<ApiKeyResponse> AuthGetApiKeyAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
-    public Task<SaveApiKeyResponse> AuthSaveApiKeyAsync(SaveApiKeyRequest request) => throw new NotImplementedException();
-    public Task<SaveApiKeyResponse> AuthSaveApiKeyAsync(SaveApiKeyRequest request, CancellationToken cancellationToken) => throw new NotImplementedException();
+
+    // Connection Hub API (new)
+    public Task<ConnectionsListResponse> ConnectionsGetAsync()
+    {
+        Console.WriteLine($"[MockAutoHostClient] ConnectionsGetAsync() => {_connections.Count} connections");
+        return Task.FromResult(new ConnectionsListResponse { Connections = _connections });
+    }
+
+    public Task<ConnectionsListResponse> ConnectionsGetAsync(CancellationToken cancellationToken) => ConnectionsGetAsync();
+
+    public Task<CreateConnectionResponse> ConnectionsCreateAsync(CreateConnectionRequest body)
+    {
+        var newConnection = new ConnectionInfo
+        {
+            Id = _connections.Count + 1,
+            ServiceType = body.ServiceType,
+            Protocol = body.Protocol,
+            Key = body.ApiKey,
+            Description = body.Description,
+            CreatedAt = DateTimeOffset.UtcNow,
+            LastUsedAt = null
+        };
+        _connections.Add(newConnection);
+        Console.WriteLine($"[MockAutoHostClient] ConnectionsCreateAsync() => Created connection {newConnection.Id}");
+        return Task.FromResult(new CreateConnectionResponse { Success = true, ConnectionId = newConnection.Id });
+    }
+
+    public Task<CreateConnectionResponse> ConnectionsCreateAsync(CreateConnectionRequest body, CancellationToken cancellationToken) => ConnectionsCreateAsync(body);
+
+    public Task<ServiceRegistryResponse> ConnectionsGetRegistryAsync()
+    {
+        var services = new List<ServiceDefinition>
+        {
+            new() { Type = ServiceType.OpenRouter, DisplayName = "OpenRouter", Description = "Multi-model aggregator service", SupportedProtocols = new[] { ProtocolType.OpenAICompatible }, DefaultProtocol = ProtocolType.OpenAICompatible },
+            new() { Type = ServiceType.OpenAI, DisplayName = "OpenAI", Description = "ChatGPT and GPT-4 models", SupportedProtocols = new[] { ProtocolType.OpenAICompatible }, DefaultProtocol = ProtocolType.OpenAICompatible },
+            new() { Type = ServiceType.Anthropic, DisplayName = "Anthropic", Description = "Claude models", SupportedProtocols = new[] { ProtocolType.AnthropicAPI }, DefaultProtocol = ProtocolType.AnthropicAPI },
+            new() { Type = ServiceType.Grok, DisplayName = "Grok (xAI)", Description = "Grok models", SupportedProtocols = new[] { ProtocolType.OpenAICompatible }, DefaultProtocol = ProtocolType.OpenAICompatible }
+        };
+
+        var protocols = new List<ProtocolDefinition>
+        {
+            new() { Type = ProtocolType.OpenAICompatible, DisplayName = "OpenAI Compatible", Description = "Standard OpenAI API format" },
+            new() { Type = ProtocolType.AnthropicAPI, DisplayName = "Anthropic API", Description = "Anthropic's native API format" }
+        };
+
+        return Task.FromResult(new ServiceRegistryResponse { Services = services, Protocols = protocols });
+    }
+
+    public Task<ServiceRegistryResponse> ConnectionsGetRegistryAsync(CancellationToken cancellationToken) => ConnectionsGetRegistryAsync();
+
+    public Task<DeleteConnectionResponse> ConnectionsDeleteAsync(int id)
+    {
+        var connection = _connections.FirstOrDefault(c => c.Id == id);
+        if (connection != null)
+        {
+            _connections.Remove(connection);
+            Console.WriteLine($"[MockAutoHostClient] ConnectionsDeleteAsync({id}) => Deleted connection");
+            return Task.FromResult(new DeleteConnectionResponse { Success = true });
+        }
+        Console.WriteLine($"[MockAutoHostClient] ConnectionsDeleteAsync({id}) => Connection not found");
+        throw new ApiException<ErrorResponse>("Not Found", 404, "Not Found", null, new ErrorResponse { Error = "Connection not found", ErrorCode = AuthErrorCode.ConnectionNotFound }, null);
+    }
+
+    public Task<DeleteConnectionResponse> ConnectionsDeleteAsync(int id, CancellationToken cancellationToken) => ConnectionsDeleteAsync(id);
+
     public Task<ChallengeResponse> PasskeyChallengeAsync() => Task.FromResult(new ChallengeResponse { Challenge = "mock-challenge" });
     public Task<ChallengeResponse> PasskeyChallengeAsync(CancellationToken cancellationToken) => PasskeyChallengeAsync();
 

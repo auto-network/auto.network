@@ -145,10 +145,8 @@ Check that commit appears with "Verified" badge at https://github.com/auto-netwo
 
 **UI Testing System:**
 - `claude/UI.md` - UI testing framework, system architecture, lifecycle
-- `claude/UI_PRESERVATION.md` - Guidelines for preserving UI features
-- `claude/ui/METHOD.md` - UI testing methodology
-- `claude/ui/{PageName}/{PageName}.md` - Page specifications
-- `claude/ui/{PageName}/{PageName}.test.md` - Test expectations
+- `claude/Method.md` - General debugging methodology (also applies to UI testing)
+- Component specs are now co-located with tests in `AutoWeb.Tests/{ComponentPath}/_SPEC.md`
 
 ### Where to SAVE New Knowledge
 
@@ -161,7 +159,7 @@ Check that commit appears with "Verified" badge at https://github.com/auto-netwo
 
 2. **Is it a methodology or best practice?**
    - General debugging → `claude/Method.md`
-   - UI testing approach → `claude/ui/METHOD.md`
+   - UI testing methodology → `claude/UI.md`
 
 3. **Is it a mistake or anti-pattern to avoid?**
    - Add to `claude/Stupid.md` with a new monument section
@@ -169,9 +167,10 @@ Check that commit appears with "Verified" badge at https://github.com/auto-netwo
 4. **Is it a critical reminder about debugging?**
    - Add to `claude/Reminder.md`
 
-5. **Is it about a specific UI page?**
-   - Page spec → `claude/ui/{PageName}/{PageName}.md`
-   - Test expectations → `claude/ui/{PageName}/{PageName}.test.md`
+5. **Is it about a specific component?**
+   - Component specification → `AutoWeb.Tests/{ComponentPath}/_SPEC.md`
+   - Documents component behavior, requirements, valid states, and test coverage
+   - Co-located with test files for easy reference
 
 ### IMPORTANT: Before Adding Documentation
 - Check if it already exists in the relevant file
@@ -204,3 +203,4 @@ Check that commit appears with "Verified" badge at https://github.com/auto-netwo
 ### Server Configuration
 - Use `--urls` parameter when starting dotnet servers to override launchSettings.json
 - Dedicated test ports: AutoHost=6050, AutoWeb=6100 for screenshot capture
+- Read CLAUDE.md and all referenced markdown files to understand the project and get ready to work.

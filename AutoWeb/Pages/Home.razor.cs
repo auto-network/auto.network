@@ -145,10 +145,12 @@ public partial class Home : ComponentBase
     {
         try
         {
-            var result = await AutoHostClient.AuthGetApiKeyAsync();
-            if (!string.IsNullOrEmpty(result.ApiKey))
+            var result = await AutoHostClient.ConnectionsGetAsync();
+            // Get the first active connection (for now, we just use any key for OpenRouter chat)
+            var firstConnection = result.Connections.FirstOrDefault();
+            if (firstConnection != null && !string.IsNullOrEmpty(firstConnection.Key))
             {
-                apiKey = result.ApiKey;
+                apiKey = firstConnection.Key;
             }
         }
         catch (ApiException ex) when (ex.StatusCode == 401)
@@ -171,7 +173,13 @@ public partial class Home : ComponentBase
     {
         try
         {
-            await AutoHostClient.AuthSaveApiKeyAsync(new SaveApiKeyRequest { ApiKey = apiKey });
+            await AutoHostClient.ConnectionsCreateAsync(new CreateConnectionRequest
+            {
+                ApiKey = apiKey,
+                Description = "OpenRouter Connection",
+                ServiceType = ServiceType.OpenRouter,
+                Protocol = ProtocolType.OpenAICompatible
+            });
         }
         catch (ApiException ex) when (ex.StatusCode == 401)
         {

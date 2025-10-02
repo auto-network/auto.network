@@ -18,6 +18,10 @@
     {
         <Auth />
     }
+    else if (ComponentName == "ConnectionHub")
+    {
+        <ConnectionHub />
+    }
     else
     {
         <div class="text-red-500 p-4">Unknown component: @ComponentName</div>
@@ -49,6 +53,10 @@ else
                 else if (ComponentName == "Auth")
                 {
                     <Auth />
+                }
+                else if (ComponentName == "ConnectionHub")
+                {
+                    <ConnectionHub />
                 }
                 else
                 {

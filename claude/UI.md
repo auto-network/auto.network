@@ -565,17 +565,39 @@ await element.WaitForAsync(new() { Timeout = 200 }); // Local Blazor runs in mil
 
 ### Playwright + Blazor Gotchas
 
+#### For @bind:event="oninput" (triggers on every keystroke)
+
 **BAD:**
 ```csharp
-await input.FillAsync("password"); // Doesn't trigger @bind:event="oninput"!
+await input.FillAsync("password"); // Doesn't trigger oninput events!
 ```
 
 **GOOD:**
 ```csharp
-await input.PressSequentiallyAsync("password"); // Types character by character
+await input.PressSequentiallyAsync("password"); // Types character by character, triggers oninput
 ```
 
 **Rule**: Use `PressSequentiallyAsync()` for Blazor inputs with `@bind:event="oninput"`, not `FillAsync()`.
+
+#### For @bind (default - triggers on change/blur)
+
+**BAD:**
+```csharp
+await input.PressSequentiallyAsync("password");
+await button.ClickAsync(); // Button stays disabled! Change event never fired!
+```
+
+**GOOD:**
+```csharp
+await input.PressSequentiallyAsync("password");
+await input.PressAsync("Tab"); // Blur input to trigger change event
+// OR
+await input.PressAsync("Enter"); // Submit to trigger change event
+// THEN
+await button.ClickAsync(); // Now button is enabled
+```
+
+**Rule**: For `@bind` (default), you MUST blur the input or press Enter after typing to trigger the change event. Otherwise the bound value doesn't update and buttons stay disabled.
 
 ### Triggering Input Events (bUnit)
 

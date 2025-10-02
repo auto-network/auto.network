@@ -69,9 +69,9 @@ Example structure:
 
 **CRITICAL**: When refactoring to code-behind:
 - **PRESERVE** all UI transitions, animations, and behaviors
-- **CHECK** `/claude/ui/{PageName}/CRITICAL_FEATURES.md` before changing
+- **CHECK** `AutoWeb.Tests/{ComponentPath}/_SPEC.md` for component requirements before changing
 - **NEVER** simplify or remove features during refactoring
-- See `/claude/UI_PRESERVATION.md` for detailed guidelines
+- See `/claude/UI.md` for UI testing framework and guidelines
 
 ### 8. Common Operations
 

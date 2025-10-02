@@ -13,7 +13,7 @@ public partial class Settings : ComponentBase
     private enum SettingsSection
     {
         Authentication,
-        ApiKeys
+        Connections
     }
 
     private SettingsSection currentSection = SettingsSection.Authentication;

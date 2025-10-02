@@ -43,6 +43,10 @@ public enum AuthErrorCode
     UserNotFound = 3000,
     /// <summary>Passkey not found or doesn't belong to user</summary>
     PasskeyNotFound = 3001,
+    /// <summary>Connection not found or has been deleted</summary>
+    ConnectionNotFound = 3002,
+    /// <summary>User does not have permission to access this resource</summary>
+    Forbidden = 3003,
 
     // Registration errors (4000-4999)
     /// <summary>Username/email already exists in database</summary>
@@ -57,6 +61,8 @@ public enum AuthErrorCode
     CannotRemoveLastAuthMethod = 5000,
     /// <summary>Cannot remove password without at least one active passkey</summary>
     CannotRemovePasswordWithoutPasskey = 5001,
+    /// <summary>Invalid service type and protocol combination</summary>
+    InvalidServiceProtocol = 5002,
 
     // Browser/client errors (6000-6999)
     /// <summary>Browser doesn't support passkeys (WebAuthn not available)</summary>

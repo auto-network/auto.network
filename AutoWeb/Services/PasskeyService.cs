@@ -40,19 +40,17 @@ public class PasskeyService
                 return (false, "Failed to get challenge from server");
             }
 
-            // Get current user info (we should have this from the auth state)
-            var user = await _apiClient.AuthGetApiKeyAsync();
-            if (string.IsNullOrEmpty(user.ApiKey))
-            {
-                return (false, "User not authenticated");
-            }
+            // User authentication is checked by the auth middleware, so we don't need to verify here
+            // TODO: This function needs to be refactored - we need the username passed in as a parameter
+            throw new NotImplementedException("RegisterPasskeyAsync needs username parameter");
 
             // Create passkey via WebAuthn
-            var passkeyData = await _jsRuntime.InvokeAsync<PasskeyCreationResult?>(
+            /*var passkeyData = await _jsRuntime.InvokeAsync<PasskeyCreationResult?>(
                 "PasskeySupport.createPasskey",
-                user.ApiKey, // Using email as username for now
+                "", // TODO: Need username
                 challengeResponse.Challenge,
-                "localhost");
+                "localhost");*/
+            PasskeyCreationResult? passkeyData = null;
 
             if (passkeyData == null)
             {

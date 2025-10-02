@@ -16,6 +16,12 @@ public class ApiKey
     [MaxLength(200)]
     public string? Description { get; set; }
 
+    [Required]
+    public ServiceType ServiceType { get; set; } = ServiceType.OpenRouter;
+
+    [Required]
+    public ProtocolType Protocol { get; set; } = ProtocolType.OpenAICompatible;
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DateTime? LastUsedAt { get; set; }
