@@ -468,6 +468,18 @@ public class MockPasskeyServiceForAuth : PasskeyService
         return Task.FromResult(isSupported);
     }
 
+    public override Task<(bool Success, string? Token, int? UserId, string? Error)> RegisterNewUserWithPasskeyAsync(string email, string? deviceName = null)
+    {
+        Console.WriteLine($"[MockPasskeyServiceForAuth] RegisterNewUserWithPasskeyAsync({email})");
+
+        // Simulate successful new user registration with passkey
+        var userId = 999;
+        var token = $"mock-token-{email}";
+
+        Console.WriteLine($"  => Success: userId={userId}, token={token}");
+        return Task.FromResult((true, (string?)token, (int?)userId, (string?)null));
+    }
+
     public override Task<(bool Success, string? Token, AutoWeb.Client.AuthErrorCode? ErrorCode, string? Error)> AuthenticateWithPasskeyAsync(string username)
     {
         Console.WriteLine($"[MockPasskeyServiceForAuth] AuthenticateWithPasskeyAsync({username})");

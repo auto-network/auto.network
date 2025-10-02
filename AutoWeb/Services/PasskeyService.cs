@@ -78,6 +78,57 @@ public class PasskeyService
         }
     }
 
+    public virtual async Task<(bool Success, string? Token, int? UserId, string? Error)> RegisterNewUserWithPasskeyAsync(string email, string? deviceName = null)
+    {
+        try
+        {
+            // Get challenge from server
+            var challengeResponse = await _apiClient.PasskeyChallengeAsync();
+            if (string.IsNullOrEmpty(challengeResponse.Challenge))
+            {
+                return (false, null, null, "Failed to get challenge from server");
+            }
+
+            // Create passkey via WebAuthn
+            var passkeyData = await _jsRuntime.InvokeAsync<PasskeyCreationResult?>(
+                "PasskeySupport.createPasskey",
+                email,
+                challengeResponse.Challenge,
+                "localhost");
+
+            if (passkeyData == null)
+            {
+                return (false, null, null, "Failed to create passkey");
+            }
+
+            // Register new user with passkey
+            var request = new RegisterNewUserPasskeyRequest
+            {
+                Username = email,
+                CredentialId = passkeyData.CredentialId,
+                AttestationObject = passkeyData.AttestationObject,
+                ClientDataJson = passkeyData.ClientDataJSON,
+                DeviceName = deviceName ?? "Browser Passkey"
+            };
+
+            var result = await _apiClient.PasskeyRegisterAsync(request);
+
+            if (result.Success && !string.IsNullOrEmpty(result.Token))
+            {
+                return (true, result.Token, result.UserId, null);
+            }
+            else
+            {
+                return (false, null, null, "Failed to register with passkey");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error registering new user with passkey");
+            return (false, null, null, ex.Message);
+        }
+    }
+
     public virtual async Task<(bool Success, string? Token, AuthErrorCode? ErrorCode, string? Error)> AuthenticateWithPasskeyAsync(string username)
     {
         try

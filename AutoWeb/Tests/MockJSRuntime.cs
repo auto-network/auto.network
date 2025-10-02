@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using AutoWeb.Services;
+using AutoWeb.Pages;
 
 namespace AutoWeb.Tests;
 
@@ -62,7 +63,7 @@ public class MockJSRuntime : IJSRuntime
             // PasskeySupport.createPasskey - return mock passkey creation data
             case "PasskeySupport.createPasskey":
                 Console.WriteLine("  PasskeySupport.createPasskey => mock data");
-                var mockCreation = new PasskeyCreationResult
+                var mockCreation = new Auth.PasskeyCreationResult
                 {
                     CredentialId = "mock-credential-id",
                     PublicKey = "mock-public-key",

@@ -243,7 +243,14 @@ public partial class Auth : ComponentBase, IDisposable
         InvokeAsync(async () =>
         {
             await Task.Delay(50);
-            await AuthenticateWithPasskey();
+            if (isNewUser)
+            {
+                await RegisterWithPasskey();
+            }
+            else
+            {
+                await AuthenticateWithPasskey();
+            }
         });
     }
 
@@ -363,46 +370,13 @@ public partial class Auth : ComponentBase, IDisposable
 
         try
         {
-            // Get challenge from server
-            var challengeResponse = await AutoHostClient.PasskeyChallengeAsync();
-            if (string.IsNullOrEmpty(challengeResponse.Challenge))
-            {
-                errorMessage = "Failed to get challenge from server";
-                passkeyFailed = true;
-                return;
-            }
+            var (success, token, userId, error) = await PasskeyService.RegisterNewUserWithPasskeyAsync(email);
 
-            // Create passkey via WebAuthn
-            var passkeyData = await JS.InvokeAsync<PasskeyCreationResult?>(
-                "PasskeySupport.createPasskey",
-                email,
-                challengeResponse.Challenge,
-                "localhost");
-
-            if (passkeyData == null)
-            {
-                errorMessage = "Failed to create passkey";
-                passkeyFailed = true;
-                return;
-            }
-
-            // Register new user with passkey
-            var request = new RegisterNewUserPasskeyRequest
-            {
-                Username = email,
-                CredentialId = passkeyData.CredentialId,
-                AttestationObject = passkeyData.AttestationObject,
-                ClientDataJson = passkeyData.ClientDataJSON,
-                DeviceName = "Browser Passkey"
-            };
-
-            var result = await AutoHostClient.PasskeyRegisterAsync(request);
-
-            if (result.Success && !string.IsNullOrEmpty(result.Token))
+            if (success && !string.IsNullOrEmpty(token))
             {
                 // Store auth info
-                await JS.InvokeVoidAsync("sessionStorage.setItem", "authToken", result.Token);
-                await JS.InvokeVoidAsync("sessionStorage.setItem", "userId", result.UserId.ToString());
+                await JS.InvokeVoidAsync("sessionStorage.setItem", "authToken", token);
+                await JS.InvokeVoidAsync("sessionStorage.setItem", "userId", userId.ToString());
                 await JS.InvokeVoidAsync("sessionStorage.setItem", "userEmail", email);
 
                 // Navigate to main app
@@ -410,7 +384,7 @@ public partial class Auth : ComponentBase, IDisposable
             }
             else
             {
-                errorMessage = "Failed to register with passkey";
+                errorMessage = error ?? "Failed to register with passkey";
                 passkeyFailed = true;
             }
         }
