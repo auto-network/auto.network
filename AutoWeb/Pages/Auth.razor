@@ -1,0 +1,198 @@
+@page "/auth"
+@layout MinimalLayout
+@using AutoWeb.Helpers
+
+<PageTitle>Auto - Sign In</PageTitle>
+
+<div class="min-h-screen flex items-center justify-center bg-gray-900 px-4 py-8">
+    <div class="w-full max-w-md">
+        <h1 class="text-3xl font-bold text-green-400 mb-6 text-center font-mono">Auto</h1>
+
+        <div class="bg-gray-800 p-6 sm:p-8 rounded-lg shadow-2xl overflow-hidden">
+            <div class="relative">
+                <!-- Email Step -->
+                @if (authStep == AuthStep.Email)
+                {
+                <div class="w-full transition-transform duration-500 ease-in-out">
+                    <form @onsubmit="CheckEmail" @onsubmit:preventDefault="true">
+                        <label for="email" class="block text-gray-300 mb-2">Email</label>
+                        <input id="email" type="email" @bind="email" @bind:event="oninput"
+                            placeholder="you@example.com"
+                            class="@GetEmailInputClasses()"
+                            disabled="@(authStep != AuthStep.Email)" />
+
+                        @if (!string.IsNullOrEmpty(email) && !ValidationHelper.IsValidEmail(email))
+                        {
+                            <p class="text-red-400 text-sm mt-1">Please enter a valid email address</p>
+                        }
+
+                        <button type="submit"
+                            class="w-full mt-4 p-3 bg-green-600 text-white rounded hover:bg-green-500 transition-colors font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed"
+                            disabled="@(!isConnected || authStep != AuthStep.Email || !ValidationHelper.IsValidEmail(email))">
+                            Continue
+                        </button>
+                    </form>
+                </div>
+                }
+
+                <!-- Password Step -->
+                @if (authStep == AuthStep.Password)
+                {
+                <div class="w-full transition-transform duration-500 ease-in-out">
+                    <form @onsubmit="Authenticate" @onsubmit:preventDefault="true">
+                        <div class="text-gray-400 text-sm mb-4">
+                            @email
+                            <button type="button" @onclick="ResetToEmail" class="text-green-400 hover:text-green-300 ml-2">
+                                Change
+                            </button>
+                        </div>
+
+                        <label for="password" class="block text-gray-300 mb-2">
+                            @(isNewUser ? "Create Password" : "Password")
+                        </label>
+                        <input id="password" type="password" @bind="password" @bind:event="oninput"
+                            placeholder="Enter password"
+                            class="w-full p-3 bg-gray-700 text-white rounded border border-gray-600 focus:border-green-400 focus:outline-none transition-colors"
+                            disabled="@(authStep != AuthStep.Password)" />
+
+                        @if (isNewUser)
+                        {
+                            <label for="confirmPassword" class="block text-gray-300 mb-2 mt-4">Confirm Password</label>
+                            <input id="confirmPassword" type="password" @bind="confirmPassword" @bind:event="oninput"
+                                placeholder="Confirm password"
+                                class="w-full p-3 bg-gray-700 text-white rounded border border-gray-600 focus:border-green-400 focus:outline-none transition-colors" />
+                        }
+
+                        <button type="submit"
+                            class="w-full mt-4 p-3 bg-green-600 text-white rounded hover:bg-green-500 transition-colors font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed"
+                            disabled="@(!CanSubmitPassword())">
+                            @(isNewUser ? "Create Account" : "Sign In")
+                        </button>
+                    </form>
+                </div>
+                }
+
+                <!-- Method Selection Step -->
+                @if (authStep == AuthStep.MethodSelection)
+                {
+                <div class="w-full transition-transform duration-500 ease-in-out">
+                    <div class="text-gray-400 text-sm mb-4">
+                        @email
+                        <button type="button" @onclick="ResetToEmail" class="text-green-400 hover:text-green-300 ml-2">
+                            Change
+                        </button>
+                    </div>
+
+                    <h2 class="text-gray-300 text-lg mb-4">
+                        @(isNewUser ? "Choose your security method:" : "Choose sign in method:")
+                    </h2>
+
+                    <!-- We only reach this screen when both options are available -->
+                    <button @onclick="SelectPasswordMethod"
+                        class="w-full p-4 mb-3 bg-gray-700 hover:bg-gray-600 text-left rounded-lg border border-gray-600 hover:border-green-400 transition-all">
+                        <div class="flex items-start">
+                            <span class="text-2xl mr-3">🔑</span>
+                            <div>
+                                <div class="text-white font-semibold">Password</div>
+                                <div class="text-gray-400 text-sm">
+                                    @(isNewUser ? "Create a traditional password" : "Enter your password")
+                                    @if (isNewUser)
+                                    {
+                                        <span class="block text-xs mt-1">(can add passkeys later)</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </button>
+
+                    <button @onclick="@(async () => { if (isNewUser) await RegisterWithPasskey(); else SelectPasskeyMethod(); })"
+                        class="w-full p-4 bg-gray-700 hover:bg-gray-600 text-left rounded-lg border border-gray-600 hover:border-green-400 transition-all">
+                        <div class="flex items-start">
+                            <span class="text-2xl mr-3">🔐</span>
+                            <div>
+                                <div class="text-white font-semibold">Passkey</div>
+                                <div class="text-gray-400 text-sm">
+                                    @(isNewUser ? "Skip the password, use your fingerprint or Face ID" : "Use your saved passkey")
+                                </div>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+                }
+
+                <!-- Passkey Authentication Step -->
+                @if (authStep == AuthStep.Passkey)
+                {
+                <div class="w-full transition-transform duration-500 ease-in-out">
+                    <div class="text-gray-400 text-sm mb-4">
+                        @email
+                        <button type="button" @onclick="ResetToEmail" class="text-green-400 hover:text-green-300 ml-2">
+                            Change
+                        </button>
+                    </div>
+
+                    <div class="text-center py-8">
+                        <span class="text-6xl mb-4 block">🔐</span>
+                        <h2 class="text-gray-300 text-lg mb-2">Authenticating with Passkey</h2>
+                        <p class="text-gray-400 text-sm mb-4">Follow the prompts on your device</p>
+
+                        @if (isLoading)
+                        {
+                            <div class="text-gray-400">Please wait...</div>
+                        }
+                        else if (passkeyFailed)
+                        {
+                            <div class="space-y-3">
+                                <button @onclick="RetryPasskey"
+                                    class="px-6 py-3 bg-green-600 text-white rounded hover:bg-green-500 transition-colors font-semibold">
+                                    Try Again
+                                </button>
+                                @if (hasPassword)
+                                {
+                                    <div>
+                                        <button @onclick="SelectPasswordMethod" class="text-green-400 hover:text-green-300">
+                                            Use password instead
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else if (hasPassword)
+                        {
+                            <button @onclick="SelectPasswordMethod" class="text-green-400 hover:text-green-300 mt-4">
+                                Use password instead
+                            </button>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="mt-4 p-4 bg-gray-800 border border-red-500 rounded-lg">
+                <div class="flex items-start">
+                    <span class="text-red-400 mr-2">⚠</span>
+                    <div class="flex-1">
+                        <div class="text-white font-semibold mb-1">@GetUserFriendlyErrorTitle(errorCode)</div>
+                        <div class="text-gray-300 text-sm">@GetUserFriendlyErrorMessage(errorCode)</div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Connection Status -->
+        <div class="text-center mt-4 text-sm">
+            <span class="text-gray-400">
+                Status: <span class="@(isConnected ? "text-green-400" : "text-red-400")">@(isConnected ? "Connected" : "Disconnected")</span>
+            </span>
+            @if (isConnected && !string.IsNullOrEmpty(apiVersion))
+            {
+                <span class="text-gray-400 ml-12">
+                    Version: @apiVersion
+                </span>
+            }
+        </div>
+    </div>
+</div>

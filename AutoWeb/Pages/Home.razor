@@ -1,0 +1,39 @@
+﻿@page "/"
+
+<PageTitle>Grok Chat</PageTitle>
+
+<div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold">Grok 4 Fast Chat</h1>
+    <div class="flex items-center gap-4">
+        <span class="text-sm text-gray-600">@userEmail</span>
+        <button @onclick="OpenSettings" class="text-sm text-blue-600 hover:text-blue-700">Settings</button>
+        <button @onclick="Logout" class="text-sm text-red-600 hover:text-red-700">Logout</button>
+    </div>
+</div>
+
+<div class="mb-4">
+    <label for="apiKey" class="block mb-2 font-medium">OpenRouter API Key:</label>
+    <input id="apiKey" type="password" @bind="apiKey" @bind:event="oninput" @onchange="SaveApiKey"
+        placeholder="Enter your OpenRouter API key"
+        class="w-full p-2 border border-gray-300 rounded" />
+</div>
+
+<div class="bg-black text-green-400 font-mono h-96 overflow-y-auto p-4 border border-gray-300 mb-4 rounded">
+    @foreach (var message in messages)
+    {
+        <div class="mb-2 @(message.IsUser ? "text-yellow-400" : "text-cyan-400")">
+            <pre class="whitespace-pre-wrap break-words m-0">@message.Content</pre>
+        </div>
+    }
+</div>
+
+<div class="flex mb-4">
+    <input type="text" @bind="userInput" placeholder="Type your message..." @onkeypress="HandleKeyPress"
+        class="flex-grow p-2 border border-gray-300 rounded-l" />
+    <button @onclick="SendMessage" class="bg-blue-500 text-white p-2 rounded-r">Send</button>
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p class="text-red-500 mb-4">@errorMessage</p>
+}

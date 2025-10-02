@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Blazor WebAssembly",
+            "type": "blazorwasm",
+            "request": "attach",
+            "url": "http://localhost:5100",
+            "timeout": 30000,
+            "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+            "browser": "edge"
+        }
+    ]
+}

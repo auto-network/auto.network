@@ -1,0 +1,42 @@
+@page "/settings"
+@layout MinimalLayout
+@using AutoWeb.Components
+
+<PageTitle>Settings - Auto</PageTitle>
+
+<div class="min-h-screen bg-gray-900 p-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-green-400 font-mono">Settings</h1>
+            <button @onclick="GoBack" class="text-sm text-green-400 hover:text-green-300">
+                ← Back to Chat
+            </button>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="flex gap-2 mb-6 border-b border-gray-700">
+            <button @onclick="() => SelectSection(SettingsSection.Authentication)"
+                    class="@GetTabClass(SettingsSection.Authentication)">
+                Authentication
+            </button>
+            <button @onclick="() => SelectSection(SettingsSection.ApiKeys)"
+                    class="@GetTabClass(SettingsSection.ApiKeys)">
+                API Keys
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div>
+            @switch (currentSection)
+            {
+                case SettingsSection.Authentication:
+                    <AuthenticationSettings />
+                    break;
+                case SettingsSection.ApiKeys:
+                    <ApiKeysSettings />
+                    break;
+            }
+        </div>
+    </div>
+</div>

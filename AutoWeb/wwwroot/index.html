@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link href="css/app.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="app">Loading...</div>
+
+    <div id="blazor-error-ui" class="bg-yellow-100 fixed bottom-0 left-0 w-full p-4 shadow-md hidden z-[1000] text-center">
+        An unhandled error has occurred.
+        <a href="" class="reload ml-2 text-blue-600 underline">Reload</a>
+        <a class="dismiss cursor-pointer absolute top-2 right-4 text-xl">&times;</a>
+    </div>
+
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="js/passkeys.js"></script>
+    <script>
+        function scrollToBottom(selector) {
+            const element = document.querySelector(selector);
+            if (element) {
+                element.scrollTop = element.scrollHeight;
+            }
+        }
+    </script>
+</body>
+
+</html>

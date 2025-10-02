@@ -1,0 +1,336 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "elements": [
+    {
+      "tag": "h1",
+      "type": null,
+      "text": "Auto",
+      "value": "",
+      "placeholder": "",
+      "rect": {
+        "x": 416,
+        "y": 156,
+        "width": 448,
+        "height": 36
+      },
+      "visibleRect": {
+        "x": 416,
+        "y": 156,
+        "width": 448,
+        "height": 36
+      },
+      "style": {
+        "display": "block",
+        "opacity": "1",
+        "visibility": "visible",
+        "position": "static",
+        "zIndex": "auto",
+        "overflow": "visible",
+        "overflowX": "visible",
+        "overflowY": "visible"
+      },
+      "classes": "text-3xl font-bold text-green-400 mb-6 text-center font-mono",
+      "isContainer": false,
+      "visibility": {
+        "isFullyVisible": true,
+        "isClipped": false,
+        "clippedTop": false,
+        "clippedBottom": false,
+        "clippedLeft": false,
+        "clippedRight": false,
+        "visibleHeight": 36,
+        "originalHeight": 36
+      }
+    },
+    {
+      "tag": "div",
+      "type": null,
+      "text": "",
+      "value": "",
+      "placeholder": "",
+      "rect": {
+        "x": 416,
+        "y": 216,
+        "width": 448,
+        "height": 312
+      },
+      "visibleRect": {
+        "x": 416,
+        "y": 216,
+        "width": 448,
+        "height": 312
+      },
+      "style": {
+        "display": "block",
+        "opacity": "1",
+        "visibility": "visible",
+        "position": "static",
+        "zIndex": "auto",
+        "overflow": "hidden",
+        "overflowX": "hidden",
+        "overflowY": "hidden"
+      },
+      "classes": "bg-gray-800 p-6 sm:p-8 rounded-lg shadow-2xl overflow-hidden",
+      "isContainer": true,
+      "visibility": {
+        "isFullyVisible": true,
+        "isClipped": false,
+        "clippedTop": false,
+        "clippedBottom": false,
+        "clippedLeft": false,
+        "clippedRight": false,
+        "visibleHeight": 312,
+        "originalHeight": 312
+      }
+    },
+    {
+      "tag": "label",
+      "type": null,
+      "text": "Email",
+      "value": "",
+      "placeholder": "",
+      "rect": {
+        "x": 448,
+        "y": 248,
+        "width": 384,
+        "height": 24
+      },
+      "visibleRect": {
+        "x": 448,
+        "y": 248,
+        "width": 384,
+        "height": 24
+      },
+      "style": {
+        "display": "block",
+        "opacity": "1",
+        "visibility": "visible",
+        "position": "static",
+        "zIndex": "auto",
+        "overflow": "visible",
+        "overflowX": "visible",
+        "overflowY": "visible"
+      },
+      "classes": "block text-gray-300 mb-2",
+      "isContainer": false,
+      "visibility": {
+        "isFullyVisible": true,
+        "isClipped": false,
+        "clippedTop": false,
+        "clippedBottom": false,
+        "clippedLeft": false,
+        "clippedRight": false,
+        "visibleHeight": 24,
+        "originalHeight": 24
+      }
+    },
+    {
+      "tag": "input",
+      "type": "email",
+      "text": "user@example.com",
+      "value": "user@example.com",
+      "placeholder": "you@example.com",
+      "rect": {
+        "x": 448,
+        "y": 280,
+        "width": 384,
+        "height": 50
+      },
+      "visibleRect": {
+        "x": 448,
+        "y": 280,
+        "width": 384,
+        "height": 50
+      },
+      "style": {
+        "display": "inline-block",
+        "opacity": "1",
+        "visibility": "visible",
+        "position": "static",
+        "zIndex": "auto",
+        "overflow": "clip",
+        "overflowX": "clip",
+        "overflowY": "clip"
+      },
+      "classes": "w-full p-3 bg-gray-700 text-white rounded border focus:outline-none transition-colors border-gray-600 focus:border-green-400",
+      "isContainer": true,
+      "visibility": {
+        "isFullyVisible": true,
+        "isClipped": false,
+        "clippedTop": false,
+        "clippedBottom": false,
+        "clippedLeft": false,
+        "clippedRight": false,
+        "visibleHeight": 50,
+        "originalHeight": 50
+      }
+    },
+    {
+      "tag": "button",
+      "type": "submit",
+      "text": "Continue",
+      "value": "",
+      "placeholder": "",
+      "rect": {
+        "x": 448,
+        "y": 346,
+        "width": 384,
+        "height": 48
+      },
+      "visibleRect": {
+        "x": 448,
+        "y": 346,
+        "width": 384,
+        "height": 48
+      },
+      "style": {
+        "display": "inline-block",
+        "opacity": "1",
+        "visibility": "visible",
+        "position": "static",
+        "zIndex": "auto",
+        "overflow": "visible",
+        "overflowX": "visible",
+        "overflowY": "visible"
+      },
+      "classes": "w-full mt-4 p-3 bg-green-600 text-white rounded hover:bg-green-500 transition-colors font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed",
+      "isContainer": false,
+      "visibility": {
+        "isFullyVisible": true,
+        "isClipped": false,
+        "clippedTop": false,
+        "clippedBottom": false,
+        "clippedLeft": false,
+        "clippedRight": false,
+        "visibleHeight": 48,
+        "originalHeight": 48
+      }
+    },
+    {
+      "tag": "span",
+      "type": null,
+      "text": "Status:",
+      "value": "",
+      "placeholder": "",
+      "rect": {
+        "x": 501,
+        "y": 546,
+        "width": 129,
+        "height": 16
+      },
+      "visibleRect": {
+        "x": 501,
+        "y": 546,
+        "width": 129,
+        "height": 16
+      },
+      "style": {
+        "display": "inline",
+        "opacity": "1",
+        "visibility": "visible",
+        "position": "static",
+        "zIndex": "auto",
+        "overflow": "visible",
+        "overflowX": "visible",
+        "overflowY": "visible"
+      },
+      "classes": "text-gray-400",
+      "isContainer": false,
+      "visibility": {
+        "isFullyVisible": true,
+        "isClipped": false,
+        "clippedTop": false,
+        "clippedBottom": false,
+        "clippedLeft": false,
+        "clippedRight": false,
+        "visibleHeight": 16,
+        "originalHeight": 16
+      }
+    },
+    {
+      "tag": "span",
+      "type": null,
+      "text": "Connected",
+      "value": "",
+      "placeholder": "",
+      "rect": {
+        "x": 555,
+        "y": 546,
+        "width": 75,
+        "height": 16
+      },
+      "visibleRect": {
+        "x": 555,
+        "y": 546,
+        "width": 75,
+        "height": 16
+      },
+      "style": {
+        "display": "inline",
+        "opacity": "1",
+        "visibility": "visible",
+        "position": "static",
+        "zIndex": "auto",
+        "overflow": "visible",
+        "overflowX": "visible",
+        "overflowY": "visible"
+      },
+      "classes": "text-green-400",
+      "isContainer": false,
+      "visibility": {
+        "isFullyVisible": true,
+        "isClipped": false,
+        "clippedTop": false,
+        "clippedBottom": false,
+        "clippedLeft": false,
+        "clippedRight": false,
+        "visibleHeight": 16,
+        "originalHeight": 16
+      }
+    },
+    {
+      "tag": "span",
+      "type": null,
+      "text": "Version: 1.0.0",
+      "value": "",
+      "placeholder": "",
+      "rect": {
+        "x": 678,
+        "y": 546,
+        "width": 101,
+        "height": 16
+      },
+      "visibleRect": {
+        "x": 678,
+        "y": 546,
+        "width": 101,
+        "height": 16
+      },
+      "style": {
+        "display": "inline",
+        "opacity": "1",
+        "visibility": "visible",
+        "position": "static",
+        "zIndex": "auto",
+        "overflow": "visible",
+        "overflowX": "visible",
+        "overflowY": "visible"
+      },
+      "classes": "text-gray-400 ml-12",
+      "isContainer": false,
+      "visibility": {
+        "isFullyVisible": true,
+        "isClipped": false,
+        "clippedTop": false,
+        "clippedBottom": false,
+        "clippedLeft": false,
+        "clippedRight": false,
+        "visibleHeight": 16,
+        "originalHeight": 16
+      }
+    }
+  ]
+}
