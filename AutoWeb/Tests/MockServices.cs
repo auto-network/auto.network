@@ -51,6 +51,12 @@ public class MockAutoHostClient : IAutoHostClient
     private List<PasskeyInfo> _passkeys;
     private Dictionary<string, RegisteredUser> _registeredUsers = new();
 
+    /// <summary>
+    /// Override login result for testing failure scenarios.
+    /// Set to false to simulate login failure.
+    /// </summary>
+    public bool? OverrideLoginResult { get; set; }
+
     public MockAutoHostClient(NavigationManager nav)
     {
         _nav = nav;
@@ -272,6 +278,18 @@ public class MockAutoHostClient : IAutoHostClient
 
     public Task<LoginResponse> AuthLoginAsync(LoginRequest request)
     {
+        // Check for override result (for testing failure scenarios)
+        if (OverrideLoginResult.HasValue)
+        {
+            var success = OverrideLoginResult.Value;
+            Console.WriteLine($"[MockAutoHostClient] AuthLoginAsync({request.Username}) => OVERRIDE: success={success}");
+            return Task.FromResult(new LoginResponse
+            {
+                Success = success,
+                Token = success ? "mock-override-token" : null
+            });
+        }
+
         if (!_registeredUsers.ContainsKey(request.Username))
         {
             Console.WriteLine($"[MockAutoHostClient] AuthLoginAsync({request.Username}) => user not found");

@@ -73,6 +73,54 @@ This is a modern web application with clean separation of concerns:
 3. AutoWeb starts with hot reload for both C# and CSS
 4. API client regenerates automatically when you build
 
+## Sprint Workflow & Version Control
+
+After completing each development phase (feature, refactor, test suite):
+
+### 1. Prepare Detailed Commit Message
+Create comprehensive commit messages following this structure:
+```
+Brief summary line (imperative mood)
+
+## Changes
+- Detailed bullet points of what changed
+- Organized by category (Features, Testing, Refactoring, etc.)
+
+## Technical Details
+- Implementation notes
+- Architecture decisions
+- Important patterns or approaches
+
+## Testing
+- What was tested
+- Test coverage added
+- Verification performed
+```
+
+See the initial commit (db83a47) for example of detailed commit message format.
+
+### 2. Create Signed Commit
+```bash
+git add .
+git commit -m "$(cat <<'EOF'
+Your detailed commit message here
+EOF
+)"
+```
+
+**IMPORTANT**:
+- All commits MUST be GPG signed (automatic via `commit.gpgsign true` config)
+- Verify signature before pushing: `git log --show-signature -1`
+- NEVER include AI attribution or "Co-Authored-By: Claude" lines
+
+### 3. Push to GitHub
+```bash
+git push origin main
+```
+
+### 4. Verify on GitHub
+Check that commit appears with "Verified" badge at https://github.com/auto-network/auto.network.git
+
 ## Important Notes
 
 - AutoHost must be running for AutoWeb authentication to work

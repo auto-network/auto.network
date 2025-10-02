@@ -89,5 +89,76 @@ This script:
 
 **ALWAYS use this script when API contracts change!**
 
+### 9. Version Control After Each Sprint Phase
+
+After completing any significant work (feature, refactor, test suite), create a detailed commit:
+
+#### Step 1: Review Changes
+```bash
+git status        # See what changed
+git diff          # Review all modifications
+```
+
+#### Step 2: Prepare Detailed Commit Message
+Follow this structure:
+```
+Brief summary (imperative: "Add X", "Fix Y", "Refactor Z")
+
+## Changes
+- Bullet points organized by category
+- Feature additions
+- Bug fixes
+- Refactoring work
+- Test coverage
+
+## Technical Details
+- Architecture decisions made
+- Implementation patterns used
+- Dependencies added/changed
+
+## Testing
+- Tests added/modified
+- Coverage achieved
+- Verification performed
+```
+
+#### Step 3: Create and Verify Signed Commit
+```bash
+# Stage changes
+git add .
+
+# Create commit with detailed message
+git commit -m "$(cat <<'EOF'
+Your detailed commit message here
+
+## Changes
+...
+
+## Testing
+...
+EOF
+)"
+
+# Verify GPG signature
+git log --show-signature -1
+
+# Push to GitHub
+git push origin main
+```
+
+#### Why This Matters
+- **Detailed commits** serve as project documentation
+- **GPG signatures** prove authenticity and prevent tampering
+- **Regular commits** create restore points and track progress
+- **Comprehensive messages** help future debugging and understanding
+
+#### Critical Rules
+- ❌ NEVER include "Co-Authored-By: Claude" or AI attribution
+- ✅ ALWAYS verify GPG signature before pushing
+- ✅ ALWAYS write comprehensive commit messages (see initial commit db83a47)
+- ✅ ALWAYS commit after completing a sprint phase (feature/refactor/tests)
+
 ### Remember
 The bug is usually simpler than you think. The fix is usually smaller than you imagine. The problem is usually exactly what the error message says it is.
+
+Every completed sprint phase deserves a detailed, signed commit to GitHub.
