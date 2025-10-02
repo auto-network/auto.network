@@ -679,28 +679,25 @@ AutoWeb/
 AutoWeb.Tests/
 ├── Components/
 │   └── AuthenticationSettings/
+│       ├── _SPEC.md                   # Component specification and test documentation
 │       ├── UnitTests.cs               # Unit tests (bUnit) - 58 tests
 │       ├── RenderTests.cs             # Render tests (bUnit) - 5 tests
 │       ├── LayoutTests.cs             # Layout tests (Playwright) - 5 tests
-│       ├── InteractionTests.cs        # Interaction tests (Playwright) - 11 tests
-│       └── SPEC.md                    # Component specification and test documentation
+│       └── InteractionTests.cs        # Interaction tests (Playwright) - 11 tests
 ├── Pages/
 │   └── Auth/
+│       ├── _SPEC.md                   # Component specification and test documentation
 │       ├── UnitTests.cs               # Unit tests (bUnit) - 34 tests
 │       ├── RenderTests.cs             # Render tests (bUnit) - 10 tests
 │       ├── LayoutTests.cs             # Layout tests (Playwright) - 8 tests
-│       ├── InteractionTests.cs        # Interaction tests (Playwright) - 8 tests
-│       └── SPEC.md                    # Component specification and test documentation
+│       └── InteractionTests.cs        # Interaction tests (Playwright) - 8 tests
 ├── PlaywrightFixture.cs               # Shared Playwright setup (browser lifecycle)
 └── AutoWeb.Tests.csproj               # Includes Playwright, bUnit, xUnit
 
 claude/
 ├── UI.md                              # This document (modern testing methodology)
 ├── Reminder.md                        # Critical debugging reminders
-├── Stupid.md                          # Anti-patterns and mistakes to avoid
-└── tasks/
-    ├── Auth-Testing-Modernization.md  # Auth testing modernization plan (COMPLETED)
-    └── Auth-Testing-WTB.md            # Auth testing work task breakdown (COMPLETED)
+└── Stupid.md                          # Anti-patterns and mistakes to avoid
 ```
 
 **Total Test Coverage (139 tests, ~1m 17s runtime):**
@@ -708,7 +705,7 @@ claude/
 - Auth: 60 tests
 
 **Component Documentation:**
-Each component has a SPEC.md file co-located with its tests containing:
+Each component has a _SPEC.md file co-located with its tests containing:
 - Component purpose and functional requirements
 - All valid states and transitions
 - Mock infrastructure details
@@ -717,8 +714,8 @@ Each component has a SPEC.md file co-located with its tests containing:
 - Performance metrics
 
 Examples:
-- `AutoWeb.Tests/Components/AuthenticationSettings/SPEC.md`
-- `AutoWeb.Tests/Pages/Auth/SPEC.md`
+- `AutoWeb.Tests/Components/AuthenticationSettings/_SPEC.md`
+- `AutoWeb.Tests/Pages/Auth/_SPEC.md`
 
 ## Component Testing Checklist
 
@@ -771,7 +768,7 @@ When testing a new component, follow this checklist:
 - Target: 3-5 tests, ~15 seconds total runtime
 
 ### 8. Document Component
-- [ ] Create `AutoWeb.Tests/{ComponentPath}/SPEC.md`
+- [ ] Create `AutoWeb.Tests/{ComponentPath}/_SPEC.md`
 - [ ] Document all valid states and transitions
 - [ ] Document mock infrastructure
 - [ ] Document test coverage by layer
